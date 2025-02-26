@@ -10,7 +10,7 @@ import (
 )
 
 func build(ctx context.Context, c client.Client) (*client.Result, error) {
-	// Start the custom BuildKit frontend
+
 	log.Println("Starting custom BuildKit frontend...")
 
 	// Define the Windows base image
