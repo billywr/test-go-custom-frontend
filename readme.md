@@ -1,6 +1,6 @@
 # Custom Frontends in BuildKit
 
-Custom frontends in BuildKit are images that, when launched as containers via the `buildctl build` command, communicate with and send requests to the BuildKit daemon.
+Custom frontends in BuildKit are OCI images that contain executables responsible for interpreting build definitions like Dockerfiles. When a build is triggered with a custom frontend (typically specified using the `#syntax=` directive), BuildKit creates a container from the frontend image and runs the executable inside it. This executable communicates with BuildKitd over gRPC, processing the build input and generating a Low-Level Build (LLB) definition, which it sends back to BuildKitd to execute the actual build steps. In this way, the frontend container acts as a dynamic translator between the user's build instructions and the internal build graph, enabling custom logic, preprocessing, or entirely new build syntaxes.
 
 use case
 
@@ -33,7 +33,7 @@ COPY wcow-frontend.exe /wcow-frontend.exe
 ENTRYPOINT ["/wcow-frontend.exe"]
 ```
 
-## Building and Pushing the Image
+## Building and Pushing the Image (creates custom docker frontend image)
 Use the following `buildctl` command to build an image from the Dockerfile and push it to a Docker registry:
 
 ```aiignore
@@ -63,15 +63,23 @@ Verify that BuildKit has started with the correct IP configuration and is listen
 ## Running the Custom Frontend
 Once everything is set up, you can run the following command:
 
+create dockerfile input, since our frontend expects a dockerfile, notice the use of `#syntax` this enables buidlkit to process the image as a custom frontend.
 ```aiignore
-buildctl build `
-    --frontend=gateway.v0 `
-    --opt source=docker-image://username/cfrontend03:latest `
-    --local context=. `
-    --local dockerfile=.
+#syntax=docker.io/username/imageName:latest
+FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
 ```
 
-This should ensure that the custom frontend image sends requests to BuildKit and displays some of the `fmt` statements from the `main.go` of the source code in section one.
+
+use this command to build the dockerfile input.
+```aiignore
+buildctl build `
+  --frontend=dockerfile.v0 `
+  --local context="pathToBuildContext" `
+  --local dockerfile="pathToDockerfileInput" `
+  --output type=image,name=docker.io/username/resultingImageName:latest,push=false
+```
+
+This build process creates a container with the executable `wcow-frontend.exe`, the executable using gRPC send LLB build definitions to buildkitd.
 
 # Note:
 **Section Two** is still under testing; therefore, this document will be updated in due course.
