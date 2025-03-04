@@ -57,6 +57,10 @@ A possible way to ensure this works is by stopping any running BuildKit instance
 
 `start-process buildkitd -ArgumentList "--addr", "tcp://<host_machine_IP>:1234"`
 
+Set buildkit address in the environment variables[pwsh]
+
+`$env:BUILDKIT_HOST = "tcp://<host_machine_IP>:1234"`
+
 Verify that BuildKit has started with the correct IP configuration and is listening for requests on the specified port:
 `netstat -an | findstr 1234`
 
