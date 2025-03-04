@@ -4,7 +4,7 @@ Custom frontends in BuildKit are OCI images that contain executables responsible
 
 use case
 
-![img.png](img.png)
+![img_1.png](img_1.png)
 
 ## Section One: Custom Frontend Preparation
 
