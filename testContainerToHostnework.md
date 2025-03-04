@@ -37,13 +37,18 @@ error: failed to solve: process "cmd /S /C curl.exe http://172.20.176.1:1234" di
 
 # Observations:
 ❌ The build container was unable to connect to the host machine's IP (172.20.176.1) on port 1234.
+
 ✅ Verified that `buildkitd` was actively listening on `172.20.176.1:1234` from the host itself.
+
 ❌ Despite correct IP and port, no connection from inside the build container was possible.
 
 # Root cause analysis:
 BuildKit's build containers are network-isolated from the host during builds, especially on Windows.
+
 Windows BuildKit builds often run in a NAT network or even Hyper-V isolation(unverified), preventing direct access to host machine IPs.
+
 There is no `--network=host` support during builds on Windows, unlike Linux, which limits network configuration options.
+
 Therefore, a build step attempting to connect back to the host machine (even via its own IP) is blocked or unreachable.
 
 # Key insight:
