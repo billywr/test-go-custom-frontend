@@ -2,6 +2,10 @@
 
 Custom frontends in BuildKit are images that, when launched as containers via the `buildctl build` command, communicate with and send requests to the BuildKit daemon.
 
+use case
+
+![img.png](img.png)
+
 ## Section One: Custom Frontend Preparation
 
 I have this [sample code](https://github.com/billywr/test-go-custom-frontend/blob/master/main.go) that I used to generate an `.exe` file, which is required to create a custom frontend image.
