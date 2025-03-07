@@ -89,3 +89,9 @@ This build process creates a container with the executable `wcow-frontend.exe`, 
 **Section Two** is still under testing; therefore, this document will be updated in due course.
 
 You are welcome to give your feedback and suggestions.
+
+# Refs:
+https://medium.com/@tonistiigi/new-dockerfile-capabilities-in-v1-7-0-be6873650741<br>
+https://github.com/EricHripko/buildkit-fdk<br>
+https://stackoverflow.com/questions/73067660<br>
+https://mattrickard.com/building-a-new-dockerfile-frontend

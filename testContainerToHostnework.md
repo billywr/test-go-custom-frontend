@@ -1,6 +1,6 @@
-## Findings: Testing container-to-host network connectivity in Windows BuildKit builds
+# 📝 Testing container-to-host network connectivity in WCOW BuildKit builds
 
-# Test setup:
+## ⚙️ Test setup:
 
 Dockerfile:
 
@@ -26,7 +26,7 @@ buildctl build `
   --output type=image,name=docker.io/100909/testnetwork:latest,push=false
 ```
 
-# Test results:
+## 🧪 Test results [buildctl build ...]:
 
 ```aiignore
 [2/2] RUN curl.exe http://172.20.176.1:1234:
@@ -35,14 +35,14 @@ error: failed to solve: process "cmd /S /C curl.exe http://172.20.176.1:1234" di
 
 ```
 
-# Observations:
+## Observations:
 ❌ The build container was unable to connect to the host machine's IP (172.20.176.1) on port 1234.
 
 ✅ Verified that `buildkitd` was actively listening on `172.20.176.1:1234` from the host itself.
 
 ❌ Despite correct IP and port, no connection from inside the build container was possible.
 
-# Root cause analysis:
+## 🔎 Root cause analysis:
 BuildKit's build containers are network-isolated from the host during builds, especially on Windows.
 
 Windows BuildKit builds often run in a NAT network or even Hyper-V isolation(unverified), preventing direct access to host machine IPs.
@@ -51,5 +51,20 @@ There is no `--network=host` support during builds on Windows, unlike Linux, whi
 
 Therefore, a build step attempting to connect back to the host machine (even via its own IP) is blocked or unreachable.
 
-# Key insight:
+## ⚠️ Key insight:
 On Windows, build steps (including RUN commands and custom frontends running during the build) cannot reliably reach the host machine's network services, including the same `buildkitd` instance that runs the build.
+
+
+## 🚫 Impact:
+
+Frontends or build steps that need to call back to the host machine over the network will fail under normal Windows BuildKit configurations.
+
+Techniques that work on Linux (like using host.docker.internal or --network=host) do not apply reliably on Windows.
+
+## ✅ Possible next steps:
+
+Explore experimental network workarounds.
+
+
+## Refs:
+https://stackoverflow.com/questions/72100310/connect-windows-containers-to-docker-host-network
